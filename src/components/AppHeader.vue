@@ -16,9 +16,7 @@ export default {
       <template #end>
         <b-navbar-item tag="div">
           <div class="buttons">
-            <router-link to="/auth/sign-up" class="button is-primary">
-              <strong>Sign up</strong>
-            </router-link>
+            <router-link to="/auth/sign-up" class="button is-primary">Sign up</router-link>
             <router-link to="/auth/sign-in" class="button is-light">Log in</router-link>
           </div>
         </b-navbar-item>

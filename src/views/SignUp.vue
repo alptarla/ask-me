@@ -1,4 +1,6 @@
 <script>
+import { email, required } from 'vuelidate/lib/validators'
+
 export default {
   name: 'SignUp',
   data() {
@@ -10,8 +12,25 @@ export default {
       }
     }
   },
+  validations: {
+    form: {
+      email: {
+        required,
+        email
+      },
+      password: {
+        required
+      },
+      fullName: {
+        required
+      }
+    }
+  },
   methods: {
     handleFormSubmit() {
+      this.$v.$touch()
+      if (this.$v.$invalid) return
+
       console.log('form :>> ', this.form)
     }
   }
@@ -20,18 +39,28 @@ export default {
 
 <template>
   <form class="form" @submit.prevent="handleFormSubmit">
-    <b-field label="Full Name" expanded>
-      <b-input v-model="form.fullName" />
+    <b-field label="Full Name" expanded :type="$v.form.fullName.$error ? 'is-danger' : null">
+      <b-input v-model="$v.form.fullName.$model" />
+      <div v-if="$v.form.fullName.$error" class="has-text-danger">
+        <small v-if="!$v.form.fullName.required">Full Name is required!</small>
+      </div>
     </b-field>
     <b-field grouped>
-      <b-field label="Email" expanded>
-        <b-input v-model="form.email" />
+      <b-field label="Email" expanded :type="$v.form.email.$error ? 'is-danger' : null">
+        <b-input v-model="$v.form.email.$model" />
+        <div v-if="$v.form.email.$error" class="has-text-danger">
+          <small v-if="!$v.form.email.required">Email is required!</small>
+          <small v-if="!$v.form.email.email">Please enter a valid email!</small>
+        </div>
       </b-field>
-      <b-field label="Password" expanded>
-        <b-input v-model="form.password" />
+      <b-field label="Password" expanded :type="$v.form.password.$error ? 'is-danger' : null">
+        <b-input type="password" v-model="$v.form.password.$model" />
+        <div v-if="$v.form.password.$error" class="has-text-danger">
+          <small v-if="!$v.form.password.required">Password is required!</small>
+        </div>
       </b-field>
     </b-field>
-    <b-button type="is-primary" native-type="submit">Sign up</b-button>
+    <b-button type="is-primary" native-type="submit" :disabled="$v.$invalid">Sign up</b-button>
   </form>
 </template>
 

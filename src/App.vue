@@ -1,9 +1,16 @@
 <script>
+import { mapActions } from 'vuex'
 import AppHeader from './components/AppHeader.vue'
 export default {
   name: 'App',
   components: {
     AppHeader
+  },
+  methods: {
+    ...mapActions('auth', ['loadAuthUser'])
+  },
+  mounted() {
+    this.loadAuthUser()
   }
 }
 </script>

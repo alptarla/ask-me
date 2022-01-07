@@ -15,5 +15,9 @@ export default {
       username,
       profileImage: userCredential.user.photoURL
     })
+  },
+  async fetchUserById(id) {
+    const userRes = await getDoc(doc(db, 'users', id))
+    return makeResObject(userRes)
   }
 }

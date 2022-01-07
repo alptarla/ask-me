@@ -1,5 +1,6 @@
 <script>
 import { email, required } from 'vuelidate/lib/validators'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'SignUp',
@@ -9,7 +10,8 @@ export default {
         fullName: '',
         email: '',
         password: ''
-      }
+      },
+      isLoading: false
     }
   },
   validations: {
@@ -27,11 +29,22 @@ export default {
     }
   },
   methods: {
-    handleFormSubmit() {
+    ...mapActions('auth', ['signUp']),
+    async handleFormSubmit() {
       this.$v.$touch()
       if (this.$v.$invalid) return
 
-      console.log('form :>> ', this.form)
+      try {
+        this.isLoading = true
+        const { email, password, fullName } = this.form
+        await this.signUp({ email, password, username: fullName })
+        // todo: display success notify
+        this.$router.push('/auth/sign-in')
+      } catch (error) {
+        // todo: display error notify
+      } finally {
+        this.isLoading = false
+      }
     }
   }
 }
@@ -60,7 +73,9 @@ export default {
         </div>
       </b-field>
     </b-field>
-    <b-button type="is-primary" native-type="submit" :disabled="$v.$invalid">Sign up</b-button>
+    <b-button type="is-primary" native-type="submit" :loading="isLoading" :disabled="$v.$invalid">
+      Sign up
+    </b-button>
   </form>
 </template>
 

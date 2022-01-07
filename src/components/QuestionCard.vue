@@ -1,5 +1,6 @@
 <script>
 import moment from 'moment'
+import { mapActions, mapState } from 'vuex'
 import VoteButton from './VoteButton.vue'
 
 export default {
@@ -12,14 +13,18 @@ export default {
   },
   components: { VoteButton },
   computed: {
+    ...mapState('auth', ['user']),
     dateFromNow() {
       return moment(this.question.createdAt).fromNow()
+    },
+    isAlreadyVoted() {
+      return this.question.votes.includes(this.user.id)
     }
   },
   methods: {
-    handleUpdateVote(val) {
-      console.log('vote :>> ', val)
-      // todo: update question vote
+    ...mapActions('question', ['updateQuestionVote']),
+    handleUpdateVote(type) {
+      this.updateQuestionVote({ userId: this.user.id, questionId: this.question.id, type })
     },
     handleReplyClick() {
       // todo: reply this question
@@ -30,7 +35,11 @@ export default {
 
 <template>
   <div class="card p-5 is-flex is-align-items-flex-start">
-    <VoteButton @update-vote="handleUpdateVote" :vote="question.vote" />
+    <VoteButton
+      @update-vote="handleUpdateVote"
+      :vote="question.votes.length"
+      :is-already-voted="isAlreadyVoted"
+    />
     <div class="card-content">
       <div class="is-flex is-align-items-center mb-2">
         <h4 class="mr-2 has-text-weight-bold">{{ question.user.username }}</h4>

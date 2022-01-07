@@ -1,4 +1,13 @@
-import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore'
+import {
+  arrayRemove,
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc
+} from 'firebase/firestore'
 import { db, makeResObject } from '../lib/firebase'
 
 export default {
@@ -12,5 +21,14 @@ export default {
   async fetchQuestions() {
     const questionsRes = await getDocs(collection(db, 'questions'))
     return questionsRes.docs.map((doc) => makeResObject(doc))
+  },
+  async updateQuestionVote({ type, questionId, userId }) {
+    const questionDoc = doc(db, 'questions', questionId)
+    await updateDoc(questionDoc, {
+      votes: type === 'inc' ? arrayUnion(userId) : arrayRemove(userId)
+    })
+
+    const questionRes = await getDoc(questionDoc)
+    return makeResObject(questionRes)
   }
 }

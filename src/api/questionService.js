@@ -27,8 +27,8 @@ export default {
     await updateDoc(questionDoc, {
       votes: type === 'inc' ? arrayUnion(userId) : arrayRemove(userId)
     })
-
-    const questionRes = await getDoc(questionDoc)
-    return makeResObject(questionRes)
+  },
+  async addAnswerToQuestion(questionId, answer) {
+    await updateDoc(doc(db, 'questions', questionId), { answers: arrayUnion(answer) })
   }
 }

@@ -25,7 +25,7 @@ export default {
       <div class="is-flex is-align-items-center mb-2">
         <h4 class="mr-3 has-text-weight-bold">{{ username }}</h4>
         <b-tag v-if="isOwner" type="is-primary" class="mr-3">you</b-tag>
-        <p class="has-text-grey-light">{{ date }}</p>
+        <small class="has-text-grey">{{ date }}</small>
         <div class="ml-auto">
           <slot name="card-action" />
         </div>
@@ -38,7 +38,7 @@ export default {
 <style scoped>
 .card {
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin: 1rem 0;
 }
 .card-content {
   padding: 0;

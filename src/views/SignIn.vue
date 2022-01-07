@@ -1,6 +1,6 @@
 <script>
 import { email, required } from 'vuelidate/lib/validators'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'SignIn',
@@ -24,8 +24,19 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState('auth', ['user'])
+  },
   methods: {
     ...mapActions('auth', ['signIn']),
+    displayNotification(type, message) {
+      this.$buefy.notification.open({
+        duration: 2000,
+        message,
+        type,
+        position: 'is-top-right'
+      })
+    },
     async handleFormSubmit() {
       this.$v.$touch()
       if (this.$v.$invalid) return
@@ -33,10 +44,10 @@ export default {
       try {
         this.isLoading = true
         await this.signIn(this.form)
-        // todo: display success notification
+        this.displayNotification('is-success', `Welcome ${this.user.username}!`)
         this.$router.push('/')
       } catch (error) {
-        // todo: display error notification
+        this.displayNotification('is-danger', 'Authentication denied!')
       } finally {
         this.isLoading = false
       }

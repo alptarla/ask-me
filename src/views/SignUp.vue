@@ -30,6 +30,14 @@ export default {
   },
   methods: {
     ...mapActions('auth', ['signUp']),
+    displayNotification(type, message) {
+      this.$buefy.notification.open({
+        duration: 2000,
+        message,
+        type,
+        position: 'is-top-right'
+      })
+    },
     async handleFormSubmit() {
       this.$v.$touch()
       if (this.$v.$invalid) return
@@ -38,10 +46,10 @@ export default {
         this.isLoading = true
         const { email, password, fullName } = this.form
         await this.signUp({ email, password, username: fullName })
-        // todo: display success notify
+        this.displayNotification('is-success', 'Register successfully, please sign in!')
         this.$router.push('/auth/sign-in')
       } catch (error) {
-        // todo: display error notify
+        this.displayNotification('is-danger', 'Authentication denied!')
       } finally {
         this.isLoading = false
       }

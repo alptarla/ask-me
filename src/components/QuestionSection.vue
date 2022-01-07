@@ -20,6 +20,9 @@ export default {
     },
     isAlreadyVoted() {
       return this.question.votes.includes(this.user.id)
+    },
+    isOwner() {
+      return this.question.user.id === this.user.id
     }
   },
   methods: {
@@ -35,7 +38,7 @@ export default {
 </script>
 
 <template>
-  <SectionCard :username="question.user.username" :date="dateFromNow">
+  <SectionCard :username="question.user.username" :date="dateFromNow" :is-owner="isOwner">
     <template #card-left>
       <VoteButton
         @update-vote="handleUpdateVote"

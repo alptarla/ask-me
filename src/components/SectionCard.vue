@@ -9,6 +9,10 @@ export default {
     date: {
       type: String,
       default: ''
+    },
+    isOwner: {
+      type: Boolean,
+      default: false
     }
   }
 }
@@ -19,7 +23,8 @@ export default {
     <slot name="card-left" />
     <div class="card-content">
       <div class="is-flex is-align-items-center mb-2">
-        <h4 class="mr-2 has-text-weight-bold">{{ username }}</h4>
+        <h4 class="mr-3 has-text-weight-bold">{{ username }}</h4>
+        <b-tag v-if="isOwner" type="is-primary" class="mr-3">you</b-tag>
         <p class="has-text-grey-light">{{ date }}</p>
         <div class="ml-auto">
           <slot name="card-action" />

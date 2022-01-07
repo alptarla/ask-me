@@ -39,6 +39,10 @@ export default {
         localStorage.setItem('user', JSON.stringify(authUser))
         commit('setUser', authUser)
       })
+    },
+    async signOut({ commit }) {
+      await authService.signOut()
+      commit('removeUser')
     }
   }
 }

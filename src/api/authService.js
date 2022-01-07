@@ -19,5 +19,6 @@ export default {
   async fetchUserById(id) {
     const userRes = await getDoc(doc(db, 'users', id))
     return makeResObject(userRes)
-  }
+  },
+  signOut: () => auth.signOut()
 }

@@ -1,6 +1,18 @@
 <script>
+import { mapActions, mapState } from 'vuex'
+
 export default {
-  name: 'AppHeader'
+  name: 'AppHeader',
+  computed: {
+    ...mapState('auth', ['isLoggedIn'])
+  },
+  methods: {
+    ...mapActions('auth', ['signOut']),
+    async handleSignOutClick() {
+      await this.signOut()
+      this.$router.push('/auth/sign-in')
+    }
+  }
 }
 </script>
 
@@ -16,8 +28,13 @@ export default {
       <template #end>
         <b-navbar-item tag="div">
           <div class="buttons">
-            <router-link to="/auth/sign-up" class="button is-primary">Sign up</router-link>
-            <router-link to="/auth/sign-in" class="button is-light">Log in</router-link>
+            <b-button v-if="isLoggedIn" type="is-light" @click="handleSignOutClick">
+              Sign out
+            </b-button>
+            <template v-else>
+              <router-link to="/auth/sign-up" class="button is-primary">Sign up</router-link>
+              <router-link to="/auth/sign-in" class="button is-light">Log in</router-link>
+            </template>
           </div>
         </b-navbar-item>
       </template>

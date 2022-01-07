@@ -2,7 +2,7 @@
 import { v4 as uuid } from 'uuid'
 import { required } from 'vuelidate/lib/validators'
 import { mapActions, mapState } from 'vuex'
-import QuestionCard from '../components/QuestionCard.vue'
+import QuestionSection from '../components/QuestionSection.vue'
 
 export default {
   name: 'Home',
@@ -66,7 +66,7 @@ export default {
       this.isPageLoading = false
     }
   },
-  components: { QuestionCard }
+  components: { QuestionSection }
 }
 </script>
 
@@ -88,7 +88,7 @@ export default {
       </b-button>
     </div>
     <div class="question-list my-5">
-      <QuestionCard v-for="question in questions" :key="question.id" :question="question" />
+      <QuestionSection v-for="question in questions" :key="question.id" :question="question" />
     </div>
     <b-loading v-model="isPageLoading" :is-full-page="true" />
   </div>

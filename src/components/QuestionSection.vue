@@ -1,17 +1,18 @@
 <script>
 import moment from 'moment'
 import { mapActions, mapState } from 'vuex'
+import SectionCard from './SectionCard.vue'
 import VoteButton from './VoteButton.vue'
 
 export default {
-  name: 'QuestionCard',
+  name: 'QuestionSection',
   props: {
     question: {
       type: Object,
       required: true
     }
   },
-  components: { VoteButton },
+  components: { VoteButton, SectionCard },
   computed: {
     ...mapState('auth', ['user']),
     dateFromNow() {
@@ -34,24 +35,24 @@ export default {
 </script>
 
 <template>
-  <div class="card p-5 is-flex is-align-items-flex-start">
-    <VoteButton
-      @update-vote="handleUpdateVote"
-      :vote="question.votes.length"
-      :is-already-voted="isAlreadyVoted"
-    />
-    <div class="card-content">
-      <div class="is-flex is-align-items-center mb-2">
-        <h4 class="mr-2 has-text-weight-bold">{{ question.user.username }}</h4>
-        <p class="has-text-grey-light">{{ dateFromNow }}</p>
-        <b-button type="is-primary is-outlined ml-auto" @click="handleReplyClick">
-          <i class="fas fa-reply mr-2" />
-          <span>Reply</span>
-        </b-button>
-      </div>
-      <p>{{ question.question }}</p>
-    </div>
-  </div>
+  <SectionCard :username="question.user.username" :date="dateFromNow">
+    <template #card-left>
+      <VoteButton
+        @update-vote="handleUpdateVote"
+        :vote="question.votes.length"
+        :is-already-voted="isAlreadyVoted"
+      />
+    </template>
+    <template #card-action>
+      <b-button type="is-ghost">
+        <i class="fas fa-reply mr-2" />
+        <span>Reply</span>
+      </b-button>
+    </template>
+    <template #card-description>
+      {{ question.question }}
+    </template>
+  </SectionCard>
 </template>
 
 <style scoped>

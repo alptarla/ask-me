@@ -1,6 +1,7 @@
 <script>
 import { v4 as uuid } from 'uuid'
 import { mapActions, mapState } from 'vuex'
+import QuestionCard from '../components/QuestionCard.vue'
 
 export default {
   name: 'Home',
@@ -12,7 +13,8 @@ export default {
     }
   },
   computed: {
-    ...mapState('auth', ['user'])
+    ...mapState('auth', ['user']),
+    ...mapState('question', ['questions'])
   },
   methods: {
     ...mapActions('question', ['getQuestions', 'createQuestion']),
@@ -32,7 +34,7 @@ export default {
           question: this.question,
           answers: [],
           votes: [],
-          userId: this.user.id,
+          user: this.user,
           createdAt: Date.now()
         })
         this.question = ''
@@ -53,26 +55,25 @@ export default {
     } finally {
       this.isPageLoading = false
     }
-  }
+  },
+  components: { QuestionCard }
 }
 </script>
 
 <template>
-  <div class="home">
-    <div class="question">
-      <div class="question-input">
-        <b-field label="Question" label-position="on-border">
-          <b-input type="textarea" v-model="question" />
-        </b-field>
-        <b-button type="is-primary" :loading="isSendLoading" @click="handleSendQuestionClick">
-          Send Question
-        </b-button>
-      </div>
-      <div class="question-list">
-        <!-- questions in here! -->
-      </div>
+  <div class="question">
+    <div class="question-input card p-5">
+      <b-field label="Question" label-position="on-border">
+        <b-input v-model="question" type="textarea" />
+      </b-field>
+      <b-button type="is-primary" :loading="isSendLoading" @click="handleSendQuestionClick">
+        Send Question
+      </b-button>
     </div>
-    <b-loading :is-full-page="true" v-model="isPageLoading" />
+    <div class="question-list my-5">
+      <QuestionCard v-for="question in questions" :key="question.id" :question="question" />
+    </div>
+    <b-loading v-model="isPageLoading" :is-full-page="true" />
   </div>
 </template>
 
@@ -81,6 +82,7 @@ export default {
   max-width: 800px;
   margin: 0 auto;
 }
+
 .avatar {
   width: 3rem;
   height: 3rem;

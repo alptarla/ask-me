@@ -1,5 +1,6 @@
 <script>
 import { v4 as uuid } from 'uuid'
+import { required } from 'vuelidate/lib/validators'
 import { mapActions, mapState } from 'vuex'
 import QuestionCard from '../components/QuestionCard.vue'
 
@@ -10,6 +11,11 @@ export default {
       question: '',
       isPageLoading: false,
       isSendLoading: false
+    }
+  },
+  validations: {
+    question: {
+      required
     }
   },
   computed: {
@@ -27,6 +33,9 @@ export default {
       })
     },
     async handleSendQuestionClick() {
+      this.$v.$touch()
+      if (this.$v.$invalid) return
+
       try {
         this.isSendLoading = true
         await this.createQuestion({
@@ -37,10 +46,11 @@ export default {
           user: this.user,
           createdAt: Date.now()
         })
+
         this.question = ''
+        this.$v.$reset()
       } catch (error) {
         this.displayErrorMessage()
-        console.log(error)
       } finally {
         this.isSendLoading = false
       }
@@ -63,8 +73,15 @@ export default {
 <template>
   <div class="question">
     <div class="question-input card p-5">
-      <b-field label="Question" label-position="on-border">
-        <b-input v-model="question" type="textarea" />
+      <b-field
+        label="Question"
+        label-position="on-border"
+        :type="$v.question.$error ? 'is-danger' : null"
+      >
+        <b-input v-model="$v.question.$model" type="textarea" />
+        <div v-if="$v.question.$error">
+          <small class="has-text-danger">Question is required!</small>
+        </div>
       </b-field>
       <b-button type="is-primary" :loading="isSendLoading" @click="handleSendQuestionClick">
         Send Question
@@ -82,7 +99,6 @@ export default {
   max-width: 800px;
   margin: 0 auto;
 }
-
 .avatar {
   width: 3rem;
   height: 3rem;

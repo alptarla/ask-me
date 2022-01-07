@@ -17,7 +17,7 @@ export default {
 
 <template>
   <div class="app">
-    <header class="mb-5">
+    <header class="header">
       <AppHeader />
     </header>
     <main class="container">
@@ -32,5 +32,9 @@ export default {
 
 body {
   font-family: 'Poppins', sans-serif;
+}
+
+.header {
+  margin-bottom: 4rem;
 }
 </style>

@@ -20,9 +20,9 @@ export default {
     }
   },
   actions: {
-    async signIn(context, { email, password }) {
+    async signIn({ commit }, { email, password }) {
       const user = await authService.signIn(email, password)
-      context.commit('setUser', user)
+      commit('setUser', user)
     },
     async signUp(_, { email, password, username }) {
       await authService.signUp({ email, password, username })

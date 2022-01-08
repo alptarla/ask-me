@@ -21,6 +21,12 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      isEdit: false,
+      editedAnswer: ''
+    }
+  },
   computed: {
     ...mapState('auth', ['user']),
     dateFromNow() {
@@ -34,9 +40,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('question', ['updateAnswerVote', 'removeAnswerFromQuestion']),
+    ...mapActions('question', ['updateAnswerVote', 'removeAnswerFromQuestion', 'updateAnswer']),
     handleUpdateVote(type) {
-      // todo: update answer vote count
       this.updateAnswerVote({
         questionId: this.questionId,
         answerId: this.answer.id,
@@ -45,15 +50,23 @@ export default {
       })
     },
     handleDeleteAnswerClick() {
-      // todo: delete this answer
-      try {
-        this.removeAnswerFromQuestion({ answerId: this.answer.id, questionId: this.questionId })
-      } catch (error) {
-        console.log(error)
-      }
+      this.removeAnswerFromQuestion({ answerId: this.answer.id, questionId: this.questionId })
     },
     handleEditAnswerClick() {
-      // todo: edit this answer
+      this.isEdit = true
+    },
+    handleUpdateClick() {
+      this.updateAnswer({
+        questionId: this.questionId,
+        answerId: this.answer.id,
+        fields: { answer: this.editedAnswer }
+      })
+      this.editedAnswer = ''
+      this.isEdit = false
+    },
+    handleCancelEditClick() {
+      this.isEdit = false
+      this.editedAnswer = ''
     }
   }
 }
@@ -74,17 +87,24 @@ export default {
           <i class="fas fa-trash-alt mr-2" />
           <span>Delete</span>
         </b-button>
-        <b-button type="is-ghost" @click="handleEditAnswerClick">
+        <b-button v-if="!isEdit" type="is-ghost" @click="handleEditAnswerClick">
           <i class="fas fa-pencil-alt mr-2" />
           <span>Edit</span>
         </b-button>
+        <b-button v-else type="is-ghost" @click="handleCancelEditClick">Cancel Changes</b-button>
       </div>
     </template>
     <template #card-description>
-      <p>
+      <p v-if="!isEdit">
         <span class="has-text-primary mr-2">@{{ answerTo }}</span>
         <span>{{ answer.answer }}</span>
       </p>
+      <div v-else>
+        <b-field label="Edit" label-position="on-border">
+          <b-input type="textarea" v-model="editedAnswer" />
+        </b-field>
+        <b-button @click="handleUpdateClick" type="is-primary">Update</b-button>
+      </div>
     </template>
   </SectionCard>
 </template>

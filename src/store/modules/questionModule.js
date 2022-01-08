@@ -25,6 +25,14 @@ export default {
         return question
       })
     },
+    removeQuestion(state, questionId) {
+      state.questions = state.questions.filter((question) => question.id !== questionId)
+    },
+    updateQuestion(state, { questionId, fields }) {
+      state.questions = state.questions.map((question) =>
+        question.id === questionId ? { ...question, ...fields } : question
+      )
+    },
     addAnswerToQuestion(state, { questionId, answer }) {
       state.questions = state.questions.map((question) => {
         if (question.id !== questionId) return question
@@ -54,6 +62,15 @@ export default {
         question.answers = question.answers.filter((answer) => answer.id !== answerId)
         return question
       })
+    },
+    updateAnswer(state, { questionId, answerId, fields }) {
+      state.questions = state.questions.map((question) => {
+        if (question.id !== questionId) return question
+        question.answers = question.answers.map((answer) =>
+          answer.id === answerId ? { ...answer, ...fields } : answer
+        )
+        return question
+      })
     }
   },
   actions: {
@@ -69,6 +86,14 @@ export default {
       commit('updateVote', { type, questionId, userId })
       await questionService.updateQuestionVote({ questionId, userId, type })
     },
+    async removeQuestion({ commit }, { questionId }) {
+      commit('removeQuestion', questionId)
+      await questionService.removeQuestion(questionId)
+    },
+    async updateQuestion({ commit }, { questionId, fields }) {
+      commit('updateQuestion', { questionId, fields })
+      await questionService.updateQuestion(questionId, fields)
+    },
     async addAnswerToQuestion({ commit }, { questionId, answer }) {
       await questionService.addAnswerToQuestion(questionId, answer)
       commit('addAnswerToQuestion', { questionId, answer })
@@ -80,6 +105,10 @@ export default {
     async removeAnswerFromQuestion({ commit }, { answerId, questionId }) {
       commit('removeAnswerFromQuestion', { answerId, questionId })
       await questionService.removeAnswerfromQuestion(questionId, answerId)
+    },
+    async updateAnswer({ commit }, { questionId, answerId, fields }) {
+      commit('updateAnswer', { questionId, answerId, fields })
+      await questionService.updateAnswer({ questionId, answerId, fields })
     }
   }
 }

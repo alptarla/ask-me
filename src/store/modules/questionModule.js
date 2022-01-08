@@ -32,6 +32,21 @@ export default {
         question.answers.push(answer)
         return question
       })
+    },
+    updateAnswerVote(state, { questionId, answerId, userId, type }) {
+      const question = state.questions.find((question) => question.id === questionId)
+      question.answers = question.answers.map((answer) => {
+        if (answer.id !== answerId) return answer
+
+        if (type === 'inc') {
+          answer.votes.push(userId)
+        } else {
+          answer.votes = answer.votes.filter((vote) => vote !== userId)
+        }
+        return answer
+      })
+
+      state.questions = state.questions.map((q) => (q.id === question.id ? question : q))
     }
   },
   actions: {
@@ -50,6 +65,10 @@ export default {
     async addAnswerToQuestion({ commit }, { questionId, answer }) {
       await questionService.addAnswerToQuestion(questionId, answer)
       commit('addAnswerToQuestion', { questionId, answer })
+    },
+    async updateAnswerVote({ commit }, { answerId, questionId, userId, type }) {
+      commit('updateAnswerVote', { answerId, questionId, userId, type })
+      await questionService.updateAnswerVote({ questionId, answerId, userId, type })
     }
   }
 }

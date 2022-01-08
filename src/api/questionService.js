@@ -30,5 +30,22 @@ export default {
   },
   async addAnswerToQuestion(questionId, answer) {
     await updateDoc(doc(db, 'questions', questionId), { answers: arrayUnion(answer) })
+  },
+  async updateAnswerVote({ questionId, answerId, type, userId }) {
+    const questionDoc = doc(db, 'questions', questionId)
+    const questionRes = await getDoc(questionDoc)
+
+    const question = makeResObject(questionRes)
+    question.answers = question.answers.map((answer) => {
+      if (answer.id !== answerId) return answer
+      if (type === 'inc') {
+        answer.votes.push(userId)
+      } else {
+        answer.votes = answer.votes.filter((vote) => vote !== userId)
+      }
+      return answer
+    })
+
+    await updateDoc(questionDoc, { ...question })
   }
 }

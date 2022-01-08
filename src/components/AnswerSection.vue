@@ -1,6 +1,6 @@
 <script>
 import moment from 'moment'
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import SectionCard from './SectionCard.vue'
 import VoteButton from './VoteButton.vue'
 
@@ -13,6 +13,10 @@ export default {
       requried: true
     },
     answerTo: {
+      type: String,
+      required: true
+    },
+    questionId: {
       type: String,
       required: true
     }
@@ -30,8 +34,15 @@ export default {
     }
   },
   methods: {
-    handleUpdateVote() {
+    ...mapActions('question', ['updateAnswerVote']),
+    handleUpdateVote(type) {
       // todo: update answer vote count
+      this.updateAnswerVote({
+        questionId: this.questionId,
+        answerId: this.answer.id,
+        userId: this.user.id,
+        type
+      })
     },
     handleDeleteAnswerClick() {
       // todo: delete this answer

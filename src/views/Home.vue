@@ -88,14 +88,15 @@ export default {
         Send Question
       </b-button>
     </div>
-    <div class="my-5" v-for="question in questions" :key="question.id">
+    <div class="my-5" v-for="(question, index) in questions" :key="index">
       <QuestionSection :question="question" />
       <div class="answers">
         <AnswerSection
-          v-for="answer in question.answers"
+          v-for="(answer, index) in question.answers"
           :answer="answer"
           :answer-to="answer.user.username"
-          :key="answer.id"
+          :question-id="question.id"
+          :key="index"
         />
       </div>
     </div>

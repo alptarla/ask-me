@@ -1,8 +1,9 @@
 import authApi from '../../api/authApi'
+import storageApi from '../../api/storageApi'
 import { auth } from '../../lib/firebase'
 
 const initState = () => {
-  const stored = JSON.parse(localStorage.getItem('user'))
+  const stored = storageApi.get('user')
   return stored ? { isLoggedIn: true, user: stored } : { isLoggedIn: false, user: {} }
 }
 
@@ -31,13 +32,13 @@ export default {
     async loadAuthUser({ commit }) {
       auth.onAuthStateChanged(async (user) => {
         if (!user) {
-          localStorage.removeItem('user')
+          storageApi.remove('user')
           commit('removeUser')
           return
         }
 
         const authUser = await authApi.fetchUserById(user.uid)
-        localStorage.setItem('user', JSON.stringify(authUser))
+        storageApi.set('user', authUser)
         commit('setUser', authUser)
       })
     },

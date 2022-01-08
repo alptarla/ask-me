@@ -94,7 +94,7 @@ export default {
         <AnswerSection
           v-for="(answer, index) in question.answers"
           :answer="answer"
-          :answer-to="answer.user.username"
+          :answer-to="question.user.username"
           :question-id="question.id"
           :key="index"
         />

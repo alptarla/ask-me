@@ -115,11 +115,11 @@ export default {
             <span>Edit</span>
           </b-button>
           <b-button v-else type="is-ghost" @click="handleCancelEditClick">Cancel Changes</b-button>
-          <b-button type="is-ghost" @click="handleReplyClick" :disabled="isShowReplyInput">
-            <i class="fas fa-reply mr-2" />
-            <span>Reply</span>
-          </b-button>
         </template>
+        <b-button type="is-ghost" @click="handleReplyClick" :disabled="isShowReplyInput">
+          <i class="fas fa-reply mr-2" />
+          <span>Reply</span>
+        </b-button>
       </template>
       <template #card-description>
         <p v-if="!isEdit">{{ question.question }}</p>

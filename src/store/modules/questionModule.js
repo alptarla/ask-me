@@ -47,6 +47,13 @@ export default {
       })
 
       state.questions = state.questions.map((q) => (q.id === question.id ? question : q))
+    },
+    removeAnswerFromQuestion(state, { questionId, answerId }) {
+      state.questions = state.questions.map((question) => {
+        if (question.id !== questionId) return question
+        question.answers = question.answers.filter((answer) => answer.id !== answerId)
+        return question
+      })
     }
   },
   actions: {
@@ -69,6 +76,10 @@ export default {
     async updateAnswerVote({ commit }, { answerId, questionId, userId, type }) {
       commit('updateAnswerVote', { answerId, questionId, userId, type })
       await questionService.updateAnswerVote({ questionId, answerId, userId, type })
+    },
+    async removeAnswerFromQuestion({ commit }, { answerId, questionId }) {
+      commit('removeAnswerFromQuestion', { answerId, questionId })
+      await questionService.removeAnswerfromQuestion(questionId, answerId)
     }
   }
 }

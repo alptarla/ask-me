@@ -47,5 +47,13 @@ export default {
     })
 
     await updateDoc(questionDoc, { ...question })
+  },
+  async removeAnswerfromQuestion(questionId, answerId) {
+    const questionDoc = doc(db, 'questions', questionId)
+    const questionRes = await getDoc(questionDoc)
+    const questionData = makeResObject(questionRes)
+
+    questionData.answers = questionData.answers.filter((answer) => answer.id !== answerId)
+    await updateDoc(questionDoc, { ...questionData })
   }
 }

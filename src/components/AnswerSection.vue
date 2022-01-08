@@ -34,7 +34,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('question', ['updateAnswerVote']),
+    ...mapActions('question', ['updateAnswerVote', 'removeAnswerFromQuestion']),
     handleUpdateVote(type) {
       // todo: update answer vote count
       this.updateAnswerVote({
@@ -46,6 +46,11 @@ export default {
     },
     handleDeleteAnswerClick() {
       // todo: delete this answer
+      try {
+        this.removeAnswerFromQuestion({ answerId: this.answer.id, questionId: this.questionId })
+      } catch (error) {
+        console.log(error)
+      }
     },
     handleEditAnswerClick() {
       // todo: edit this answer

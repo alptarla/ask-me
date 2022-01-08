@@ -1,4 +1,4 @@
-import questionService from '../../api/questionService'
+import questionApi from '../../api/questionApi'
 
 export default {
   namespaced: true,
@@ -75,40 +75,40 @@ export default {
   },
   actions: {
     async createQuestion({ commit }, question) {
-      const newQuestion = await questionService.createQuestion(question)
+      const newQuestion = await questionApi.createQuestion(question)
       commit('addQuestion', newQuestion)
     },
     async getQuestions({ commit }) {
-      const questions = await questionService.fetchQuestions()
+      const questions = await questionApi.fetchQuestions()
       commit('setQuestions', questions)
     },
     async updateQuestionVote({ commit }, { questionId, userId, type }) {
       commit('updateVote', { type, questionId, userId })
-      await questionService.updateQuestionVote({ questionId, userId, type })
+      await questionApi.updateQuestionVote({ questionId, userId, type })
     },
     async removeQuestion({ commit }, { questionId }) {
       commit('removeQuestion', questionId)
-      await questionService.removeQuestion(questionId)
+      await questionApi.removeQuestion(questionId)
     },
     async updateQuestion({ commit }, { questionId, fields }) {
       commit('updateQuestion', { questionId, fields })
-      await questionService.updateQuestion(questionId, fields)
+      await questionApi.updateQuestion(questionId, fields)
     },
     async addAnswerToQuestion({ commit }, { questionId, answer }) {
-      await questionService.addAnswerToQuestion(questionId, answer)
+      await questionApi.addAnswerToQuestion(questionId, answer)
       commit('addAnswerToQuestion', { questionId, answer })
     },
     async updateAnswerVote({ commit }, { answerId, questionId, userId, type }) {
       commit('updateAnswerVote', { answerId, questionId, userId, type })
-      await questionService.updateAnswerVote({ questionId, answerId, userId, type })
+      await questionApi.updateAnswerVote({ questionId, answerId, userId, type })
     },
     async removeAnswerFromQuestion({ commit }, { answerId, questionId }) {
       commit('removeAnswerFromQuestion', { answerId, questionId })
-      await questionService.removeAnswerfromQuestion(questionId, answerId)
+      await questionApi.removeAnswerfromQuestion(questionId, answerId)
     },
     async updateAnswer({ commit }, { questionId, answerId, fields }) {
       commit('updateAnswer', { questionId, answerId, fields })
-      await questionService.updateAnswer({ questionId, answerId, fields })
+      await questionApi.updateAnswer({ questionId, answerId, fields })
     }
   }
 }

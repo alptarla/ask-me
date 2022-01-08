@@ -1,4 +1,4 @@
-import authService from '../../api/authService'
+import authApi from '../../api/authApi'
 import { auth } from '../../lib/firebase'
 
 const initState = () => {
@@ -21,11 +21,11 @@ export default {
   },
   actions: {
     async signIn({ commit }, { email, password }) {
-      const user = await authService.signIn(email, password)
+      const user = await authApi.signIn(email, password)
       commit('setUser', user)
     },
     async signUp({ commit }, { email, password, username }) {
-      const user = await authService.signUp({ email, password, username })
+      const user = await authApi.signUp({ email, password, username })
       commit('setUser', user)
     },
     async loadAuthUser({ commit }) {
@@ -36,13 +36,13 @@ export default {
           return
         }
 
-        const authUser = await authService.fetchUserById(user.uid)
+        const authUser = await authApi.fetchUserById(user.uid)
         localStorage.setItem('user', JSON.stringify(authUser))
         commit('setUser', authUser)
       })
     },
     async signOut({ commit }) {
-      await authService.signOut()
+      await authApi.signOut()
       commit('removeUser')
     }
   }

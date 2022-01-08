@@ -10,11 +10,16 @@ export default {
   },
   async signUp({ email, password, username }) {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-    await setDoc(doc(db, 'users', userCredential.user.uid), {
+
+    const userDoc = doc(db, 'users', userCredential.user.uid)
+    await setDoc(userDoc, {
       email: userCredential.user.email,
       username,
       profileImage: userCredential.user.photoURL
     })
+
+    const userRes = await getDoc(userDoc)
+    return makeResObject(userRes)
   },
   async fetchUserById(id) {
     const userRes = await getDoc(doc(db, 'users', id))

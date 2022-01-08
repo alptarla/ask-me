@@ -1,6 +1,6 @@
 <script>
 import { email, required } from 'vuelidate/lib/validators'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'SignUp',
@@ -28,6 +28,9 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState('auth', ['user'])
+  },
   methods: {
     ...mapActions('auth', ['signUp']),
     displayNotification(type, message) {
@@ -46,8 +49,8 @@ export default {
         this.isLoading = true
         const { email, password, fullName } = this.form
         await this.signUp({ email, password, username: fullName })
-        this.displayNotification('is-success', 'Register successfully, please sign in!')
-        this.$router.push('/auth/sign-in')
+        this.displayNotification('is-success', `Welcome ${this.user.username}!`)
+        this.$router.push('/')
       } catch (error) {
         this.displayNotification('is-danger', 'Authentication denied!')
       } finally {

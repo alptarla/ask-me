@@ -24,8 +24,9 @@ export default {
       const user = await authService.signIn(email, password)
       commit('setUser', user)
     },
-    async signUp(_, { email, password, username }) {
-      await authService.signUp({ email, password, username })
+    async signUp({ commit }, { email, password, username }) {
+      const user = await authService.signUp({ email, password, username })
+      commit('setUser', user)
     },
     async loadAuthUser({ commit }) {
       auth.onAuthStateChanged(async (user) => {

@@ -10,7 +10,7 @@ export default {
         email: '',
         password: ''
       },
-      isLoading: false
+      loading: false
     }
   },
   validations: {
@@ -37,19 +37,19 @@ export default {
         position: 'is-top-right'
       })
     },
-    async handleFormSubmit() {
+    async handleSubmit() {
       this.$v.$touch()
       if (this.$v.$invalid) return
 
       try {
-        this.isLoading = true
+        this.loading = true
         await this.signIn(this.form)
         this.displayNotification('is-success', `Welcome ${this.user.username}!`)
         this.$router.push('/')
       } catch (error) {
         this.displayNotification('is-danger', 'Authentication denied!')
       } finally {
-        this.isLoading = false
+        this.loading = false
       }
     }
   }
@@ -57,7 +57,7 @@ export default {
 </script>
 
 <template>
-  <form class="form" @submit.prevent="handleFormSubmit">
+  <form class="form" @submit.prevent="handleSubmit">
     <b-field label="Email" expanded :type="$v.form.email.$error ? 'is-danger' : null">
       <b-input name="email" v-model="$v.form.email.$model" />
       <div v-if="$v.form.email.$error" class="has-text-danger">
@@ -71,7 +71,7 @@ export default {
         <small v-if="!$v.form.password.required">Password is required!</small>
       </div>
     </b-field>
-    <b-button type="is-primary" native-type="submit" :loading="isLoading" :disabled="$v.$invalid">
+    <b-button type="is-primary" native-type="submit" :loading="loading" :disabled="$v.$invalid">
       Log in
     </b-button>
   </form>

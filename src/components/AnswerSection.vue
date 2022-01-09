@@ -23,8 +23,9 @@ export default {
   },
   data() {
     return {
-      isEdit: false,
-      editedAnswer: ''
+      editView: false,
+      editedAnswer: '',
+      loading: false
     }
   },
   computed: {
@@ -49,24 +50,33 @@ export default {
         type
       })
     },
-    handleDeleteAnswerClick() {
+    handleRemove() {
       this.removeAnswerFromQuestion({ answerId: this.answer.id, questionId: this.questionId })
     },
-    handleEditAnswerClick() {
-      this.isEdit = true
-    },
-    handleUpdateClick() {
-      this.updateAnswer({
-        questionId: this.questionId,
-        answerId: this.answer.id,
-        fields: { answer: this.editedAnswer }
-      })
+    toggleEditView(val) {
+      this.editView = val
       this.editedAnswer = ''
-      this.isEdit = false
     },
-    handleCancelEditClick() {
-      this.isEdit = false
-      this.editedAnswer = ''
+    async handleUpdate() {
+      try {
+        this.loading = true
+        await this.updateAnswer({
+          questionId: this.questionId,
+          answerId: this.answer.id,
+          fields: { answer: this.editedAnswer }
+        })
+
+        this.toggleEditView(false)
+      } catch (error) {
+        this.$buefy.notification.open({
+          duration: 2000,
+          message: 'Something went wrong!',
+          type: 'is-danger',
+          position: 'is-top-right'
+        })
+      } finally {
+        this.loading = false
+      }
     }
   }
 }
@@ -83,19 +93,19 @@ export default {
     </template>
     <template v-if="isOwner" #card-action class="ml-auto">
       <div class="is-flex is-align-items-center">
-        <b-button type="is-ghost" class="mr-2 has-text-danger" @click="handleDeleteAnswerClick">
+        <b-button type="is-ghost" class="mr-2 has-text-danger" @click="handleRemove">
           <i class="fas fa-trash-alt mr-2" />
           <span>Delete</span>
         </b-button>
-        <b-button v-if="!isEdit" type="is-ghost" @click="handleEditAnswerClick">
+        <b-button v-if="!editView" type="is-ghost" @click="toggleEditView(true)">
           <i class="fas fa-pencil-alt mr-2" />
           <span>Edit</span>
         </b-button>
-        <b-button v-else type="is-ghost" @click="handleCancelEditClick">Cancel Changes</b-button>
+        <b-button v-else type="is-ghost" @click="toggleEditView(false)">Cancel Changes</b-button>
       </div>
     </template>
     <template #card-description>
-      <p v-if="!isEdit">
+      <p v-if="!editView">
         <span class="has-text-primary mr-2">@{{ answerTo }}</span>
         <span>{{ answer.answer }}</span>
       </p>
@@ -103,7 +113,7 @@ export default {
         <b-field label="Edit" label-position="on-border">
           <b-input type="textarea" v-model="editedAnswer" />
         </b-field>
-        <b-button @click="handleUpdateClick" type="is-primary">Update</b-button>
+        <b-button @click="handleUpdate" type="is-primary" :loading="loading">Update</b-button>
       </div>
     </template>
   </SectionCard>

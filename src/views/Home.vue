@@ -10,8 +10,8 @@ export default {
   data() {
     return {
       question: '',
-      isPageLoading: false,
-      isSendLoading: false
+      pageLoading: false,
+      questionLoading: false
     }
   },
   validations: {
@@ -33,19 +33,21 @@ export default {
         position: 'is-top-right'
       })
     },
-    async handleSendQuestionClick() {
+    async handleSendQuestion() {
       this.$v.$touch()
       if (this.$v.$invalid) return
 
       try {
-        this.isSendLoading = true
+        this.questionLoading = true
         await this.createQuestion({
-          id: uuid(),
-          question: this.question,
-          answers: [],
-          votes: [],
-          user: this.user,
-          createdAt: Date.now()
+          question: {
+            id: uuid(),
+            question: this.question,
+            user: this.user,
+            answers: [],
+            votes: [],
+            createdAt: Date.now()
+          }
         })
 
         this.question = ''
@@ -53,18 +55,18 @@ export default {
       } catch (error) {
         this.displayErrorMessage()
       } finally {
-        this.isSendLoading = false
+        this.questionLoading = false
       }
     }
   },
   async created() {
     try {
-      this.isPageLoading = true
+      this.pageLoading = true
       await this.getQuestions()
     } catch (error) {
       this.displayErrorMessage()
     } finally {
-      this.isPageLoading = false
+      this.pageLoading = false
     }
   },
   components: { QuestionSection, AnswerSection }
@@ -84,7 +86,7 @@ export default {
           <small class="has-text-danger">Question is required!</small>
         </div>
       </b-field>
-      <b-button type="is-primary" :loading="isSendLoading" @click="handleSendQuestionClick">
+      <b-button type="is-primary" :loading="questionLoading" @click="handleSendQuestion">
         Send Question
       </b-button>
     </div>
@@ -100,7 +102,7 @@ export default {
         />
       </div>
     </div>
-    <b-loading v-model="isPageLoading" :is-full-page="true" />
+    <b-loading v-model="pageLoading" :is-full-page="true" />
   </div>
 </template>
 

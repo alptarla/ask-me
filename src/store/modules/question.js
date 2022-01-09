@@ -1,4 +1,4 @@
-import questionApi from '../../api/questionApi'
+import questionApi from '../../api/question'
 
 export default {
   namespaced: true,
@@ -12,31 +12,26 @@ export default {
     addQuestion(state, question) {
       state.questions.push(question)
     },
-    updateVote(state, { questionId, userId, type }) {
+    removeQuestion(state, id) {
+      state.questions = state.questions.filter((question) => question.id !== id)
+    },
+    updateQuestion(state, newQuestion) {
+      state.questions = state.questions.map((question) =>
+        question.id === newQuestion.id ? newQuestion : question
+      )
+    },
+    updateQuestionVote(state, { questionId, userId, type }) {
       state.questions = state.questions.map((question) => {
         if (question.id !== questionId) return question
 
-        if (type === 'inc') {
-          question.votes.push(userId)
-          return question
-        }
-
-        question.votes = question.votes.filter((vote) => vote !== userId)
+        if (type === 'inc') question.votes.push(userId)
+        else question.votes = question.votes.filter((v) => v !== userId)
         return question
       })
     },
-    removeQuestion(state, questionId) {
-      state.questions = state.questions.filter((question) => question.id !== questionId)
-    },
-    updateQuestion(state, { questionId, fields }) {
-      state.questions = state.questions.map((question) =>
-        question.id === questionId ? { ...question, ...fields } : question
-      )
-    },
-    addAnswerToQuestion(state, { questionId, answer }) {
+    addAnswer(state, { id, answer }) {
       state.questions = state.questions.map((question) => {
-        if (question.id !== questionId) return question
-
+        if (question.id !== id) return question
         question.answers.push(answer)
         return question
       })
@@ -46,35 +41,32 @@ export default {
       question.answers = question.answers.map((answer) => {
         if (answer.id !== answerId) return answer
 
-        if (type === 'inc') {
-          answer.votes.push(userId)
-        } else {
-          answer.votes = answer.votes.filter((vote) => vote !== userId)
-        }
+        if (type === 'inc') answer.votes.push(userId)
+        else answer.votes = answer.votes.filter((id) => id !== userId)
         return answer
       })
 
-      state.questions = state.questions.map((q) => (q.id === question.id ? question : q))
+      state.questions = state.questions.map((question) =>
+        question.id === question.id ? question : question
+      )
     },
-    removeAnswerFromQuestion(state, { questionId, answerId }) {
+    removeAnswer(state, { questionId, answerId }) {
       state.questions = state.questions.map((question) => {
         if (question.id !== questionId) return question
         question.answers = question.answers.filter((answer) => answer.id !== answerId)
         return question
       })
     },
-    updateAnswer(state, { questionId, answerId, fields }) {
+    updateAnswer(state, { id, answer }) {
       state.questions = state.questions.map((question) => {
-        if (question.id !== questionId) return question
-        question.answers = question.answers.map((answer) =>
-          answer.id === answerId ? { ...answer, ...fields } : answer
-        )
+        if (question.id !== id) return question
+        question.answers = question.answers.map((ans) => (ans.id === ans.id ? answer : ans))
         return question
       })
     }
   },
   actions: {
-    async createQuestion({ commit }, question) {
+    async createQuestion({ commit }, { question }) {
       const newQuestion = await questionApi.createQuestion(question)
       commit('addQuestion', newQuestion)
     },
@@ -83,32 +75,32 @@ export default {
       commit('setQuestions', questions)
     },
     async updateQuestionVote({ commit }, { questionId, userId, type }) {
-      commit('updateVote', { type, questionId, userId })
+      commit('updateQuestionVote', { questionId, userId, type })
       await questionApi.updateQuestionVote({ questionId, userId, type })
     },
     async removeQuestion({ commit }, { questionId }) {
       commit('removeQuestion', questionId)
       await questionApi.removeQuestion(questionId)
     },
-    async updateQuestion({ commit }, { questionId, fields }) {
-      commit('updateQuestion', { questionId, fields })
-      await questionApi.updateQuestion(questionId, fields)
+    async updateQuestion({ commit }, { id, fields }) {
+      const question = await questionApi.updateQuestion(id, fields)
+      commit('updateQuestion', question)
     },
-    async addAnswerToQuestion({ commit }, { questionId, answer }) {
-      await questionApi.addAnswerToQuestion(questionId, answer)
-      commit('addAnswerToQuestion', { questionId, answer })
+    async addAnswerToQuestion({ commit }, { id, answer }) {
+      await questionApi.addAnswerToQuestion(id, answer)
+      commit('addAnswer', { id, answer })
     },
     async updateAnswerVote({ commit }, { answerId, questionId, userId, type }) {
       commit('updateAnswerVote', { answerId, questionId, userId, type })
       await questionApi.updateAnswerVote({ questionId, answerId, userId, type })
     },
     async removeAnswerFromQuestion({ commit }, { answerId, questionId }) {
-      commit('removeAnswerFromQuestion', { answerId, questionId })
+      commit('removeAnswer', { answerId, questionId })
       await questionApi.removeAnswerfromQuestion(questionId, answerId)
     },
     async updateAnswer({ commit }, { questionId, answerId, fields }) {
-      commit('updateAnswer', { questionId, answerId, fields })
-      await questionApi.updateAnswer({ questionId, answerId, fields })
+      const answer = await questionApi.updateAnswer({ questionId, answerId, fields })
+      commit('updateAnswer', { id: questionId, answer })
     }
   }
 }

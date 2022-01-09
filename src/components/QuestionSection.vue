@@ -15,10 +15,10 @@ export default {
   },
   data() {
     return {
-      isShowReplyInput: false,
+      showAnswerInput: false,
       answer: '',
-      isLoading: false,
-      isEdit: false,
+      loading: false,
+      editView: false,
       editedQuestion: ''
     }
   },
@@ -45,14 +45,15 @@ export default {
     handleUpdateVote(type) {
       this.updateQuestionVote({ userId: this.user.id, questionId: this.question.id, type })
     },
-    handleReplyClick() {
-      this.isShowReplyInput = true
+    toggleAnswerInput(val) {
+      this.showAnswerInput = val
+      this.answer = ''
     },
-    async handleSendAnswerClick() {
+    async handleSendAnswer() {
       try {
-        this.isLoading = true
+        this.loading = true
         await this.addAnswerToQuestion({
-          questionId: this.question.id,
+          id: this.question.id,
           answer: {
             id: uuid(),
             user: this.user,
@@ -61,34 +62,40 @@ export default {
             votes: []
           }
         })
-        this.answer = ''
-        this.isShowReplyInput = false
+
+        this.toggleAnswerInput(false)
       } catch (error) {
-        console.error(error)
-        // todo: display error message as "something went wrong"
+        this.$buefy.notification.open({
+          duration: 2000,
+          message: 'Something went wrong!',
+          type: 'is-danger',
+          position: 'is-top-right'
+        })
       } finally {
-        this.isLoading = false
+        this.loading = false
       }
     },
-    handleDeleteAnswerClick() {
-      this.removeQuestion({
-        questionId: this.question.id
-      })
+    handleRemove() {
+      this.removeQuestion({ questionId: this.question.id })
     },
-    handleEditAnswerClick() {
-      this.isEdit = true
-    },
-    handleUpdateClick() {
-      this.updateQuestion({
-        questionId: this.question.id,
-        fields: { question: this.editedQuestion }
-      })
-      this.isEdit = false
+    toggleEditView(val) {
+      this.editView = val
       this.editedQuestion = ''
     },
-    handleCancelEditClick() {
-      this.isEdit = false
-      this.editedQuestion = ''
+    async handleUpdate() {
+      try {
+        this.loading = true
+        await this.updateQuestion({
+          id: this.question.id,
+          fields: { question: this.editedQuestion }
+        })
+
+        this.toggleEditView(false)
+      } catch (error) {
+        // todo: display error
+      } finally {
+        this.loading = false
+      }
     }
   }
 }
@@ -106,38 +113,36 @@ export default {
       </template>
       <template #card-action>
         <template v-if="isOwner">
-          <b-button type="is-ghost" class="mr-2 has-text-danger" @click="handleDeleteAnswerClick">
+          <b-button type="is-ghost" class="mr-2 has-text-danger" @click="handleRemove">
             <i class="fas fa-trash-alt mr-2" />
             <span>Delete</span>
           </b-button>
-          <b-button v-if="!isEdit" type="is-ghost" @click="handleEditAnswerClick">
+          <b-button v-if="!editView" type="is-ghost" @click="toggleEditView(true)">
             <i class="fas fa-pencil-alt mr-2" />
             <span>Edit</span>
           </b-button>
-          <b-button v-else type="is-ghost" @click="handleCancelEditClick">Cancel Changes</b-button>
+          <b-button v-else type="is-ghost" @click="toggleEditView(false)">Cancel</b-button>
         </template>
-        <b-button type="is-ghost" @click="handleReplyClick" :disabled="isShowReplyInput">
+        <b-button type="is-ghost" @click="toggleAnswerInput(true)" :disabled="showAnswerInput">
           <i class="fas fa-reply mr-2" />
           <span>Reply</span>
         </b-button>
       </template>
       <template #card-description>
-        <p v-if="!isEdit">{{ question.question }}</p>
+        <p v-if="!editView">{{ question.question }}</p>
         <div v-else>
           <b-field label="Edit" label-position="on-border">
             <b-input type="textarea" v-model="editedQuestion" />
           </b-field>
-          <b-button @click="handleUpdateClick" type="is-primary">Update</b-button>
+          <b-button @click="handleUpdate" type="is-primary" :loading="loading">Update</b-button>
         </div>
       </template>
     </SectionCard>
-    <div v-if="isShowReplyInput" class="card p-5">
+    <div v-if="showAnswerInput" class="card p-5">
       <b-field label="Answer" label-position="on-border">
         <b-input type="textarea" placeholder="Add your answer..." v-model="answer" />
       </b-field>
-      <b-button type="is-primary" @click="handleSendAnswerClick" :loading="isLoading">
-        Send
-      </b-button>
+      <b-button type="is-primary" @click="handleSendAnswer" :loading="loading">Send</b-button>
     </div>
   </div>
 </template>

@@ -8,7 +8,7 @@ export default {
   },
   methods: {
     ...mapActions('auth', ['signOut']),
-    async handleSignOutClick() {
+    async handleSignOut() {
       await this.signOut()
       this.$router.push('/auth/sign-in')
     }
@@ -28,9 +28,7 @@ export default {
       <template #end>
         <b-navbar-item tag="div">
           <div class="buttons">
-            <b-button v-if="isLoggedIn" type="is-light" @click="handleSignOutClick">
-              Sign out
-            </b-button>
+            <b-button v-if="isLoggedIn" type="is-light" @click="handleSignOut"> Sign out </b-button>
             <template v-else>
               <router-link to="/auth/sign-up" class="button is-primary">Sign up</router-link>
               <router-link to="/auth/sign-in" class="button is-light">Log in</router-link>

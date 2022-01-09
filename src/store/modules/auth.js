@@ -1,5 +1,5 @@
-import authApi from '../../api/authApi'
-import storageApi from '../../api/storageApi'
+import authApi from '../../api/auth'
+import storageApi from '../../api/storage'
 import { auth } from '../../lib/firebase'
 
 const initState = () => {

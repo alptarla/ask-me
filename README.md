@@ -19,7 +19,7 @@ Users should be able to:
 
 ### Links
 
-- Live Site URL: [ask-me](https://ask-me-swart.vercel.app/auth/sign-in)
+- Live App URL: [ask-me](https://ask-me-swart.vercel.app/auth/sign-in)
 
 ### Built with
 
